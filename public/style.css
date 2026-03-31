@@ -1,0 +1,210 @@
+:root {
+  --bg: #f4f6f8;
+  --text: #12202f;
+  --table-fill: #b9751b;
+  --table-border: #000000;
+  --seat-fill: #ffffff00;
+  --seat-border: #000000;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+main > p {
+  margin: 0 0 28px;
+  color: #444;
+}
+
+/* ── Fælles input + label stil ── */
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #bcc7d4;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 0.95rem;
+  background: #fff;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+  outline: 2px solid #12202f;
+  outline-offset: 1px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* ── Række 1: Bord-indstillinger ── */
+.controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 12px;
+  margin: 0 0 16px;
+  align-items: end;
+}
+
+#opdaterValgKnap {
+  padding: 9px 20px;
+  border: 1px solid #12202f;
+  border-radius: 6px;
+  background: #000;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+#opdaterValgKnap:hover {
+  background: #333;
+}
+
+/* ── Række 2: Elev-formular ── */
+.elev-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 12px;
+  margin: 0 0 24px;
+  align-items: end;
+}
+
+#tilføjKnap {
+  padding: 9px 20px;
+  border: 1px solid #12202f;
+  border-radius: 6px;
+  background: #fff;
+  color: #12202f;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+#tilføjKnap:hover {
+  background: #f0f0f0;
+}
+
+#tilføjKnap:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Toast ── */
+#toast {
+  min-height: 20px;
+  margin: 0 0 16px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+#toast.success { color: #1a7a40; }
+#toast.error   { color: #b91c1c; }
+
+/* ── Bordvisning ── */
+#app {
+  display: grid;
+  gap: 28px;
+}
+
+.table-card {
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #d9e1ea;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(10, 27, 44, 0.08);
+  overflow-x: auto;
+}
+
+.table-layout {
+  position: relative;
+  width: fit-content;
+  margin: 0 auto;
+  padding: 38px 8px;
+}
+
+.table-rect {
+  background: var(--table-fill);
+  border: 2px solid var(--table-border);
+  border-radius: 8px;
+}
+
+.seat-row {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 12px;
+}
+
+.seat-row.top    { top: 0; }
+.seat-row.bottom { bottom: 0; }
+
+.seat {
+  width: 64px;
+  min-height: 34px;
+  padding: 6px 8px;
+  border-radius: 999px;
+  background: var(--seat-fill);
+  border: 2px solid var(--seat-border);
+  text-align: center;
+  font-size: 0.78rem;
+  line-height: 1.1;
+  display: grid;
+  place-items: center;
+}
+
+/* ── Responsiv ── */
+@media (max-width: 800px) {
+  .controls {
+    grid-template-columns: 1fr 1fr;
+  }
+  #opdaterValgKnap {
+    grid-column: span 2;
+  }
+  .elev-form {
+    grid-template-columns: 1fr 1fr;
+  }
+  #tilføjKnap {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 500px) {
+  .controls,
+  .elev-form {
+    grid-template-columns: 1fr;
+  }
+  #opdaterValgKnap,
+  #tilføjKnap {
+    grid-column: span 1;
+  }
+}

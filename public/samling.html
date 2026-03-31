@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="da">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bord generator</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+    <script>
+      const supabaseUrl = "https://wsuzimrjvtsgkvnhhdev.supabase.co";
+      const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndzdXppbXJqdnRzZ2t2bmhoZGV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3OTk4OTMsImV4cCI6MjA4ODM3NTg5M30.woIhpYxckg3jxI3uO7LA4JpQZs5KJubgnorixN7ZdoE";
+      window.supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    </script>
+  </head>
+  <body>
+    <main>
+      <h1>Bord generator</h1>
+      <p>Tilføj elever til listen, hvorefter en bord plan vil blive genereret ud fra elev relation, bord antal og elev pr. bord</p>
+
+      <section class="controls" aria-label="Bord indstillinger">
+        <label>
+          Elever pr. bord
+          <input id="eleverPerBordInput" type="number" min="1" value="0" />
+        </label>
+        <label>
+          Antal elever i alt
+          <input id="antalEleverInput" type="number" min="1" value="0" />
+        </label>
+        <button id="opdaterValgKnap" type="button">Opdater borde</button>
+      </section>
+
+      <section class="elev-form" aria-label="Tilføj elev">
+        <label>
+          Elev navn
+          <input id="navnInput" type="text" placeholder="Skriv elevens navn" />
+        </label>
+        <label>
+          Gode venner
+          <input id="godeVennerInput" type="text" placeholder="Navn på god ven" />
+        </label>
+        <label>
+          Darlige venner
+          <input id="dårligeVennerInput" type="text" placeholder="Navn på darlig ven" />
+        </label>
+        <button id="tilføjKnap" type="button">Tilføj til liste</button>
+      </section>
+
+      <div id="toast" aria-live="polite"></div>
+
+      <section id="app" aria-label="Bord-oversigt"></section>
+    </main>
+
+    <script src="valg.js"></script>
+    <script src="WFC.js"></script>
+    <script src="borde.js"></script>
+    <script src="opret-elev.js"></script>
+  </body>
+</html>
