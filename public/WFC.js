@@ -155,12 +155,12 @@ class wfc {
         }
         return total;
     }
-    printGrupper() {
-        console.log("Grupper:");
-        this.grupper.forEach((g, i) => {
-            console.log(`Gruppe ${i + 1}: ${g.join(", ")}`);
-        });
-    }
+    // printGrupper() { debugging
+    //     console.log("Grupper:");
+    //     this.grupper.forEach((g, i) => {
+    //         console.log(`Gruppe ${i + 1}: ${g.join(", ")}`);
+    //     });
+    // } debugging
 
     run() {
         this.initCells()
