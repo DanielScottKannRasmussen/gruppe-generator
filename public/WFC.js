@@ -9,7 +9,7 @@ class wfc {
         this.eleverPerBord = eleverPerBord;
         this.cells = [];
 
-        this.elevMap = {}; //forstår ikke helt 
+        this.elevMap = {}; 
         for (const e of elev) this.elevMap[e.navn] = e;
 
         this.muligt = {};
