@@ -58,10 +58,10 @@ class wfc {
 
             if (elev.ven.includes(naboElev.navn)) score += 2; //hvis eleven er ven med naboen, øg score
             if (elev.ikkeVen.includes(naboElev.navn)) score -= 4; //hvis eleven ikke er ven med naboen, sænk score)
-
+            //Og omvendt med naboens syn
             const naboObj = this.elevMap[naboElev.navn];
-            if (naboObj.ven && naboObj.ven.includes(elev.navn)) score += 2; //hvis naboen er ven med eleven, øg score
-            if (naboObj.ikkeVen && naboObj.ikkeVen.includes(elev.navn)) score -= 4; //hvis naboen ikke er ven med eleven, sænk score
+            if (naboObj.ven && naboObj.ven.includes(elev.navn)) score += 2;
+            if (naboObj.ikkeVen && naboObj.ikkeVen.includes(elev.navn)) score -= 4; 
         }
         return score;
     }
