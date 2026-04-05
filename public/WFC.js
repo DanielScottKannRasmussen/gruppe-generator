@@ -99,7 +99,7 @@ class wfc {
             throw new Error("Ingen mulige elever for denne celle");
         }
         const vægt = cell.muligheder.map(n => {
-            const v = this._vægt(n, cell); // Konverter til positiv sandsynlighed: e^(score) – blød softmax
+            const v = this._vægt(n, cell); // Konverter til positiv sandsynlighed: e^(score) 
             return Math.exp(Math.max(v, -10)); //begræns vægten for at undgå overflow i exp, negative scores vil have meget lav vægt, så de næsten aldrig vælges
         });
         const total = vægt.reduce((a, b) => a + b, 0);
