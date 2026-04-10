@@ -1,6 +1,6 @@
-// Viser en toast-besked til brugeren i 4 sekunder
-function visToast(besked, type = "success") {
-  const el = document.getElementById("toast");
+// Viser en besked til brugeren i 4 sekunder
+function visbesked (besked, type = "success") {
+  const el = document.getElementById("besked");
   el.textContent = besked;
   el.className = type;
   clearTimeout(el._timer);
@@ -21,14 +21,14 @@ document.getElementById("tilføjKnap").addEventListener("click", async () => {
 
   // Idiottest: tjekker om elevnavnet er udfyldt
   if (!navn) {
-    visToast("Indtast et navn.", "error");
+    visbesked ("Indtast et navn.", "error");
     navnEl.focus();
     return;
   }
 
   // Idiottest: tjekker om en elev er sat som både god og dårlig ven
   if (godVen.some(v => dårligVen.includes(v))) {
-    visToast("En elev kan ikke være både god ven og dårlig ven.", "error");
+    visbesked ("En elev kan ikke være både god ven og dårlig ven.", "error");
     return;
   }
 
@@ -54,12 +54,12 @@ document.getElementById("tilføjKnap").addEventListener("click", async () => {
 
   // Viser fejlbesked hvis serveren returnerer en fejl
   if (!res.ok) {
-    visToast("Fejl: Kunne ikke oprette elev.", "error");
+    visbesked ("Fejl: Kunne ikke oprette elev.", "error");
     return;
   }
 
   // Viser succesbesked og rydder inputfelterne
-  visToast(`"${navn}" blev tilføjet.`, "success");
+  visbesked (`"${navn}" blev tilføjet.`, "success");
   navnEl.value      = "";
   godVenEl.value    = "";
   dårligVenEl.value = "";
