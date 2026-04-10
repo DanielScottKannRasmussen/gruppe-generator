@@ -1,5 +1,5 @@
 :root {
-  --bg: #f4f6f8;
+  --bg: #ffffff;
   --text: #12202f;
   --table-fill: #b9751b;
   --table-border: #000000;
@@ -35,7 +35,7 @@ main > p {
   color: #444;
 }
 
-/* ── Fælles input + label stil ── */
+/*Fælles input og label stil */
 input[type="text"],
 input[type="number"] {
   width: 100%;
@@ -61,7 +61,7 @@ label {
   font-size: 0.9rem;
 }
 
-/* ── Række 1: Bord-indstillinger ── */
+/*Række 1: Bord-indstillinger */
 .controls {
   display: grid;
   grid-template-columns: 1fr 1fr auto;
@@ -72,7 +72,7 @@ label {
 
 #opdaterValgKnap {
   padding: 9px 20px;
-  border: 1px solid #12202f;
+  border: 1px solid #000000;
   border-radius: 6px;
   background: #000;
   color: #fff;
@@ -86,7 +86,7 @@ label {
   background: #333;
 }
 
-/* ── Række 2: Elev-formular ── */
+/*Række 2: Elev-formular */
 .elev-form {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr auto;
@@ -116,7 +116,7 @@ label {
   cursor: not-allowed;
 }
 
-/* ── Toast ── */
+/*Toast */
 #toast {
   min-height: 20px;
   margin: 0 0 16px;
@@ -127,20 +127,14 @@ label {
 #toast.success { color: #1a7a40; }
 #toast.error   { color: #b91c1c; }
 
-/* ── Bordvisning ── */
+/*Bordvisning */
 #app {
   display: grid;
-  gap: 28px;
+  grid-template-columns: repeat(3, auto);
+  gap: 40px 80px;
+  justify-content: center;
 }
 
-.table-card {
-  padding: 16px;
-  background: #fff;
-  border: 1px solid #d9e1ea;
-  border-radius: 12px;
-  box-shadow: 0 4px 14px rgba(10, 27, 44, 0.08);
-  overflow-x: auto;
-}
 
 .table-layout {
   position: relative;
@@ -152,7 +146,6 @@ label {
 .table-rect {
   background: var(--table-fill);
   border: 2px solid var(--table-border);
-  border-radius: 8px;
 }
 
 .seat-row {
@@ -182,7 +175,7 @@ label {
   place-items: center;
 }
 
-/* ── Responsiv ── */
+/*Responsiv */
 @media (max-width: 800px) {
   .controls {
     grid-template-columns: 1fr 1fr;
