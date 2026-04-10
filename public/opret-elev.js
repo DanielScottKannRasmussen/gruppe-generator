@@ -1,16 +1,17 @@
-const sb = window.supabase;
+//supabase klienten hentet fra globale objekt
+const sb = window.supabase; 
 
-// ── Vis toast ──
-function visToast(besked, type = "success") {
+function visBedsked(besked, type = "success") { 
   const el = document.getElementById("toast");
   el.textContent = besked;
   el.className = type;
-  clearTimeout(el._timer);
+  clearTimeout(el._timer);// nustiller tidlegere timer
   el._timer = setTimeout(() => { el.className = ""; el.textContent = ""; }, 4000);
 }
 
-// ── Tilføj elev ──
+//  Tilføj elev 
 document.getElementById("tilføjKnap").addEventListener("click", async () => {
+  // Hent og valider input fra DOM
   const navnEl      = document.getElementById("navnInput");
   const godVenEl    = document.getElementById("godeVennerInput");
   const dårligVenEl = document.getElementById("dårligeVennerInput");
@@ -19,14 +20,14 @@ document.getElementById("tilføjKnap").addEventListener("click", async () => {
   const godVen    = godVenEl.value.split(",").map(s => s.trim()).filter(Boolean);
   const dårligVen = dårligVenEl.value.split(",").map(s => s.trim()).filter(Boolean);
 
-  if (!navn) {
-    visToast("Indtast et navn.", "error");
+  if (!navn) { //ser om der er et navn
+    visBedsked("Indtast et navn.", "error");
     navnEl.focus();
     return;
   }
 
-  if (godVen.some(v => dårligVen.includes(v))) {
-    visToast("En elev kan ikke være både god ven og dårlig ven.", "error");
+  if (godVen.some(v => dårligVen.includes(v))) { //tjekker om der er en ven som også er en uven
+    visBedsked("En elev kan ikke være både god ven og dårlig ven.", "error");
     return;
   }
 
@@ -34,10 +35,11 @@ document.getElementById("tilføjKnap").addEventListener("click", async () => {
   knap.disabled = true;
   knap.textContent = "Tilføjer...";
 
+  //indsætter ny elev i supabase tabellen elev
   const { error } = await sb.from("elev").insert([{
     navn,
-    "gode venner":    godVen.length    ? godVen.join(", ")    : null,
-    "dårlige venner": dårligVen.length ? dårligVen.join(", ") : null,
+    "gode venner":    godVen.length    ? godVen.join(", ")    : null, // hvis der er nogen gode venner, sættes de til en streng, ellers sæt til null
+    "dårlige venner": dårligVen.length ? dårligVen.join(", ") : null, // det samme for u ven
   }]);
 
   knap.disabled = false;
@@ -45,11 +47,11 @@ document.getElementById("tilføjKnap").addEventListener("click", async () => {
 
   if (error) {
     console.error(error);
-    visToast("Fejl: " + (error.message || "Kunne ikke oprette elev."), "error");
+    visBedsked("Fejl: " + (error.message || "Kunne ikke oprette elev."), "error");
     return;
   }
 
-  visToast(`"${navn}" blev tilføjet.`, "success");
+  visBedsked(`"${navn}" blev tilføjet.`, "success"); //komfimations besked om at det virker
   navnEl.value      = "";
   godVenEl.value    = "";
   dårligVenEl.value = "";
@@ -58,7 +60,7 @@ document.getElementById("tilføjKnap").addEventListener("click", async () => {
   if (typeof window.init === "function") await window.init();
 });
 
-// ── Enter-tast i navnefeltet ──
+// Enter-tast i navnefeltet 
 document.getElementById("navnInput").addEventListener("keydown", e => {
   if (e.key === "Enter") document.getElementById("tilføjKnap").click();
 });
