@@ -1,36 +1,19 @@
+// Konstanter til beregning af bordstørrelse og pladsplacering
 const Størelse = 10;
 const BordDybte = 5;
 const PladsStørelse = 10;
-const PersonNavn = "Navn";
 
+// Henter alle elevnavne fra serveren
 async function fetchElevNavne() {
-  if (!window.supabase) return [];
-
-  const { data, error } = await window.supabase
-    .from("elev")
-    .select("navn")
-    .order("navn", { ascending: true });
-
-  if (error) {
-    console.error("Hent elevnavne fra Supabase fejlede", error);
-    return [];
-  }
-
+  const res = await fetch('/elever');
+  const data = await res.json();
   return (data || []).map((row) => String(row.navn || "").trim()).filter(Boolean);
 }
 
+// Henter alle elevdata (gode og dårlige venner) fra serveren
 async function fetchElevData() {
-  if (!window.supabase) return [];
-
-  const { data, error } = await window.supabase
-    .from("elev")
-    .select("navn, \"gode venner\", \"dårlige venner\"")
-
-  if (error) {
-    console.error("Hent elevdata fra Supabase fejlede", error);
-    return [];
-  }
-
+  const res = await fetch('/elever');
+  const data = await res.json();
   return (data || []).map((row) => {
     const godVen = String(row["gode venner"] || "").trim();
     const dårligVen = String(row["dårlige venner"] || "").trim();
@@ -42,6 +25,7 @@ async function fetchElevData() {
   }).filter(e => e.navn);
 }
 
+// Henter de aktuelle bordindstillinger fra window.BordValg
 function getValg() {
   const valg = window.BordValg || {};
   return {
@@ -51,6 +35,7 @@ function getValg() {
   };
 }
 
+// Opretter en række af pladser med elevnavne, placeret øverst eller nederst ved bordet
 function makeSeatRow(position, names) {
   const row = document.createElement("div");
   row.className = `seat-row ${position}`;
@@ -63,6 +48,7 @@ function makeSeatRow(position, names) {
   return row;
 }
 
+// Bygger html-strukturen for ét bord med pladsrækker øverst og nederst
 function renderTable(table, root) {
   const card = document.createElement("article");
   card.className = "table-card";
@@ -81,88 +67,37 @@ function renderTable(table, root) {
   root.appendChild(card);
 }
 
-function convertgruppesToTables(grupper) {
+// Beregner bordenes bredde og fordeler elever øverst og nederst ud fra WFC-grupperne
+function buildTables(grupper) {
   const { pladsStoerrelse } = getValg();
   const tables = [];
 
   grupper.forEach((gruppe) => {
-    const eleverVedBord = gruppe.length;
-    const topCount = Math.ceil(eleverVedBord / 2);
-    const bottomCount = Math.floor(eleverVedBord / 2);
+    const topCount = Math.ceil(gruppe.length / 2);
+    const bottomCount = Math.floor(gruppe.length / 2);
     const maxPerSide = Math.max(topCount, bottomCount, 1);
-
-    const topNames = gruppe.slice(0, topCount);
-    const bottomNames = gruppe.slice(topCount, topCount + bottomCount);
 
     tables.push({
       width: maxPerSide * pladsStoerrelse * Størelse,
-      topNames: topNames.length ? topNames : [PersonNavn],
-      bottomNames: bottomNames.length ? bottomNames : [PersonNavn],
+      topNames: gruppe.slice(0, topCount),
+      bottomNames: gruppe.slice(topCount, topCount + bottomCount),
     });
   });
 
   return tables;
 }
 
-function buildTables() {
-  const { pladsStoerrelse, eleverPerBord, antalElever } = getValg();
-  const totalBorde = Math.ceil(antalElever / eleverPerBord);
-  const tables = [];
-
-  const elevNavne = window.ElevNavne || [];
-
-  const elever = [];
-  for (let i = 0; i < antalElever; i += 1) {
-    elever.push(elevNavne[i % elevNavne.length] || "Tom plads");
-  }
-
-  for (let i = 0; i < totalBorde; i += 1) {
-    const startIndex = i * eleverPerBord;
-    const eleverVedBord = Math.min(eleverPerBord, antalElever - startIndex);
-    const topCount = Math.ceil(eleverVedBord / 2);
-    const bottomCount = Math.floor(eleverVedBord / 2);
-    const maxPerSide = Math.max(topCount, bottomCount, 1);
-
-    const seatNames = elever.slice(startIndex, startIndex + eleverVedBord);
-    const topNames = seatNames.slice(0, topCount);
-    const bottomNames = seatNames.slice(topCount, topCount + bottomCount);
-
-    tables.push({
-      width: maxPerSide * pladsStoerrelse * Størelse,
-      topNames: topNames.length ? topNames : [PersonNavn],
-      bottomNames: bottomNames.length ? bottomNames : [PersonNavn],
-    });
-  }
-
-  return tables;
-}
-
-function renderBorde() {
-  const app = document.getElementById("app");
-  if (!app) throw new Error("rootEl mangler.");
-  app.innerHTML = "";
-  buildTables().forEach((table) => renderTable(table, app));
-}
-
+// Renderer alle borde i #app baseret på WFC-algoritmens resultat
 function renderBordeFromWFC() {
   const app = document.getElementById("app");
   if (!app) throw new Error("rootEl mangler.");
   app.innerHTML = "";
 
-  let tables;
-  if (window.WFCResult && window.WFCResult.grupper) {
-    tables = convertgruppesToTables(window.WFCResult.grupper);
-    const scoreEl = document.createElement("p");
-    scoreEl.textContent = `Score: ${window.WFCResult.score}`;
-    scoreEl.style.margin = "0 0 16px";
-    app.appendChild(scoreEl);
-  } else {
-    tables = buildTables();
-  }
-
+  const tables = buildTables(window.WFCResult.grupper);
   tables.forEach((table) => renderTable(table, app));
 }
 
+// Kører WFC-algoritmen 20 gange og gemmer det bedste resultat
 async function runWfc() {
   const elever = window.ElevData || [];
   if (elever.length === 0) {
@@ -170,6 +105,8 @@ async function runWfc() {
     return false;
   }
   const { eleverPerBord, antalElever } = getValg();
+  // Begrænser elevlisten til det valgte antal elever
+  const begrænsedElever = elever.slice(0, antalElever);
   const antalgrupper = Math.ceil(antalElever / eleverPerBord);
 
   try {
@@ -177,10 +114,11 @@ async function runWfc() {
     let bedsteResultat = [];
 
     for (let i = 0; i < 20; i++) {
-      const wfcInstance = new wfc(elever, antalgrupper, eleverPerBord);
+      const wfcInstance = new wfc(begrænsedElever, antalgrupper, eleverPerBord);
       wfcInstance.run();
       const score = wfcInstance.beregnScore();
 
+      // Gemmer resultatet hvis scoren er bedre end den hidtil bedste
       if (score > bedsteScore) {
         bedsteScore = score;
         bedsteResultat = wfcInstance.grupper;
@@ -198,6 +136,8 @@ async function runWfc() {
     return false;
   }
 }
+
+// Henter elevnavne og elevdata fra serveren og gemmer dem globalt
 async function init() {
   window.ElevNavne = await fetchElevNavne();
   window.ElevData = await fetchElevData();
