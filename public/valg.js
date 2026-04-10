@@ -1,77 +1,73 @@
+// Globalt objekt til at gemme bord-indstillinger (bruges på tværs af scripts)
 window.BordValg = {
   eleverPerBord: 0,
   antalElever: 0,
 };
 
+// Henter gemte bord-indstillinger fra backend (Supabase via dit API)
 async function loadBordValgFraSupabase() {
-  if (!window.supabase) return;
+  const res = await fetch('/elever/bord'); // GET request til server
+  const data = await res.json(); // Konverter svar til JSON
 
-  const { data, error } = await window.supabase
-    .from("bord")
-    .select("elever, \"antal pladser\"")
-    .order("id", { ascending: false })
-    .limit(1);
-
-  if (error) {
-    console.warn("Kunne ikke hente bordvalg fra Supabase", error);
-    return;
-  }
-
+  // Hvis der findes data i databasen
   if (data?.length > 0) {
     const row = data[0];
-    const eleverPerBord = Math.max(0, Number(row.elever) || window.BordValg.eleverPerBord);
-    const antalElever = Math.max(0, Number(row["antal pladser"]) || window.BordValg.antalElever);
 
+    // Sikrer at værdier er tal ≥ 0 (fallback til 0 hvis ugyldig)
+    const eleverPerBord = Math.max(0, Number(row.elever) || 0);
+    const antalElever = Math.max(0, Number(row["antal pladser"]) || 0);
+
+    // Opdater global state
     window.BordValg = { eleverPerBord, antalElever };
   }
 }
 
+// Gemmer bord-indstillinger til backend (Supabase via dit API)
 async function gemBordValgISupabase(eleverPerBord, antalElever) {
-  if (!window.supabase) return;
-
-  const { error } = await window.supabase.from("bord").insert([
-    {
-      elever: eleverPerBord,
-      "antal pladser": antalElever,
-    },
-  ]);
-
-  if (error) console.warn("Kunne ikke gemme bordvalg til Supabase", error);
+  await fetch('/elever/bord', {
+    method: 'POST', // Sender data til server
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ eleverPerBord, antalElever }), // Konverter til JSON
+  });
 }
 
+// Kører når HTML er loaded
 document.addEventListener("DOMContentLoaded", async () => {
+  // Henter input felter og knap fra DOM
   const eleverPerBordInput = document.getElementById("eleverPerBordInput");
   const antalEleverInput = document.getElementById("antalEleverInput");
   const knap = document.getElementById("opdaterValgKnap");
 
+  // Stop hvis noget mangler (sikkerhed)
   if (!eleverPerBordInput || !antalEleverInput || !knap) return;
 
+  // Hent tidligere gemte værdier fra backend
   await loadBordValgFraSupabase();
 
+  // Sæt inputfelter til de gemte værdier
   eleverPerBordInput.value = String(window.BordValg.eleverPerBord);
   antalEleverInput.value = String(window.BordValg.antalElever);
 
+  // Når brugeren klikker på "Opdater borde"
   knap.addEventListener("click", async () => {
+    // Læs input og sikre gyldige tal ≥ 0
     const eleverPerBord = Math.max(0, Number(eleverPerBordInput.value) || 0);
     const antalElever = Math.max(0, Number(antalEleverInput.value) || 0);
 
+    // Opdater global state
     window.BordValg = { eleverPerBord, antalElever };
 
+    // Gem værdier i databasen
     await gemBordValgISupabase(eleverPerBord, antalElever);
 
+    // Opdater inputfelter (sikrer korrekt visning)
     eleverPerBordInput.value = String(eleverPerBord);
     antalEleverInput.value = String(antalElever);
 
-    // Prøv at køre WFC hvis elevdata er tilgængelig
-    const wfcSuccess = typeof window.runWfc === "function"  // Tjek om runWfc er defineret
-      ? await window.runWfc() // Antag at runWfc returnerer en promise der indikerer succes eller fejl
-      : false; // Hvis WFC ikke er tilgængelig eller fejler, fortsæt med at tegne borde
+    // Kør algoritmen (WFC = Wave Function Collapse)
+    await window.runWfc();
 
-    // Tegn borde baseret på WFC-resultat eller fallback
-    if (typeof window.renderBordeFromWFC === "function") {
-      window.renderBordeFromWFC();
-    } else if (typeof window.renderBorde === "function") {
-      window.renderBorde();
-    }
+    // Render den nye bordplan i UI
+    window.renderBordeFromWFC();
   });
 });
