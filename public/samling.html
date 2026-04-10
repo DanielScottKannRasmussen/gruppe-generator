@@ -1,58 +1,58 @@
-<!doctype html>
-<html lang="da">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bord generator</title>
     <link rel="stylesheet" href="style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
-    <script>
-      const supabaseUrl = "https://wsuzimrjvtsgkvnhhdev.supabase.co";
-      const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndzdXppbXJqdnRzZ2t2bmhoZGV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3OTk4OTMsImV4cCI6MjA4ODM3NTg5M30.woIhpYxckg3jxI3uO7LA4JpQZs5KJubgnorixN7ZdoE";
-      window.supabase = supabase.createClient(supabaseUrl, supabaseKey);
-    </script>
+   
   </head>
   <body>
     <main>
       <h1>Bord generator</h1>
       <p>Tilføj elever til listen, hvorefter en bord plan vil blive genereret ud fra elev relation, bord antal og elev pr. bord</p>
-
+<!-- Sektion til indstillinger for borde -->
       <section class="controls" aria-label="Bord indstillinger">
         <label>
+<!-- Input: hvor mange elever pr. bord -->
           Elever pr. bord
           <input id="eleverPerBordInput" type="number" min="1" value="0" />
         </label>
         <label>
+<!-- Input: samlet antal elever -->
           Antal elever i alt
           <input id="antalEleverInput" type="number" min="1" value="0" />
         </label>
+<!-- Knap til at opdatere bord-opdelingen -->
         <button id="opdaterValgKnap" type="button">Opdater borde</button>
       </section>
-
+<!-- Formular til at tilføje en elev -->
       <section class="elev-form" aria-label="Tilføj elev">
         <label>
+<!-- Input: elevens navn -->          
           Elev navn
           <input id="navnInput" type="text" placeholder="Skriv elevens navn" />
         </label>
         <label>
+<!-- Input: gode venner (relationer der ønskes sammen) -->
           Gode venner
           <input id="godeVennerInput" type="text" placeholder="Navn på god ven" />
         </label>
         <label>
+<!-- Input: dårlige venner (relationer der ønskes adskilt) -->
           Darlige venner
           <input id="dårligeVennerInput" type="text" placeholder="Navn på darlig ven" />
         </label>
         <button id="tilføjKnap" type="button">Tilføj til liste</button>
       </section>
-
+<!-- Notifikationsområde (toast beskeder) -->
       <div id="toast" aria-live="polite"></div>
-
+<!-- Her bliver bordplanen vist dynamisk -->
       <section id="app" aria-label="Bord-oversigt"></section>
     </main>
 
-    <script src="valg.js"></script>
-    <script src="WFC.js"></script>
-    <script src="borde.js"></script>
-    <script src="opret-elev.js"></script>
+   <!-- JavaScript filer der styrer funktionaliteten -->
+    <script src="valg.js"></script>        <!-- håndterer valg/inputs -->
+    <script src="WFC.js"></script>         <!-- algoritme (Wave Function Collapse) -->
+    <script src="borde.js"></script>       <!-- generering af borde -->
+    <script src="opret-elev.js"></script>  <!-- håndtering af elev-oprettelse -->
   </body>
 </html>
